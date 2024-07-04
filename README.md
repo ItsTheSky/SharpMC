@@ -1,4 +1,12 @@
-# SharpMC
+# SharpMC (Forked)
+
+Note from Sky: Why this fork?
+----------------
+Just to have some fun! I'm trying to implement some features to complete 1.18 support. Keep in mind I'm also doing this on my free time :P
+Here's what I want to work on/is already finished:
+- [x] (Message) Components + Handling in various context (chat, kick, ...)
+- [ ] Better Commands
+- [ ] Working Permissions
 
 What is SharpMC?
 ----------------
