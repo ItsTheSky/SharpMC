@@ -1,6 +1,6 @@
-using SharpMC.Network.Packets.API;
+using SharpMC.Network.API.Packets;
 
-namespace SharpMC.Network.Binary.Special
+namespace SharpMC.Network.API.Binary.Special
 {
     public interface ISlotData : IPacket
     {

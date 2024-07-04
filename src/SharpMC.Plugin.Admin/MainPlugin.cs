@@ -1,5 +1,11 @@
-﻿using SharpMC.Plugin.API;
+﻿using System.Drawing;
+using SharpMC.Plugin.API;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
+using Microsoft.Extensions.Logging;
+using SharpMC.API.Components;
+using SharpMC.API.Components.Colors;
+using SharpMC.API.Components.Types;
 using SharpMC.API.Entities;
 using SharpMC.API.Enums;
 using SharpMC.Plugin.API.Attributes;
@@ -16,6 +22,7 @@ namespace SharpMC.Plugin.Admin
         public void OnEnable(IPluginContext context)
         {
             _context = context;
+            context.GetLogger(this).LogInformation("Admin plugin enabled!");
         }
 
         public void OnDisable()
@@ -40,6 +47,30 @@ namespace SharpMC.Plugin.Admin
                     player.SendChat("Unknown world! Choices: overworld, nether");
                     break;
             }
+        }
+
+        [Command(Command = "comp")]
+        public void ComponentsCommand(IPlayer player)
+        {
+            var text = new TextComponent("Hello there")
+            {
+                Bold = true,
+                Underlined = true,
+                Color = new HexColor(Color.Aquamarine)
+            };
+            var second = new TextComponent("General Kenobi")
+            {
+                Bold = true,
+                Underlined = true,
+                Color = new HexColor(Color.Chocolate)
+            };
+            var separator = new TextComponent(" - ")
+            {
+                Color = new HexColor(Color.Black)
+            };
+
+            var final = separator.Join(text, second);
+            player.SendActionBar(final);
         }
 
         [Permission(Permission = "Core.Tps")]
@@ -169,7 +200,7 @@ namespace SharpMC.Plugin.Admin
         [Command(Command = "kick")]
         public void Kick(IPlayer _, IPlayer target, string message = "You got da boot!")
         {
-            target.Kick(message);
+            target.Kick(new TextComponent(message) { Color = MinecraftColor.DarkRed });
         }
 
         [Permission(Permission = "Core.Op")]
@@ -178,13 +209,13 @@ namespace SharpMC.Plugin.Admin
         {
             if (target.ToggleOperatorStatus())
             {
-                target.SendChat("You are now an Operator!", ChatColor.Yellow);
-                player.SendChat($"Player \"{target.UserName}\" is now an Operator!", ChatColor.Yellow);
+                target.SendChat("You are now an Operator!", MinecraftColor.Yellow);
+                player.SendChat($"Player \"{target.UserName}\" is now an Operator!", MinecraftColor.Yellow);
             }
             else
             {
-                target.SendChat("You have been De-Opped!", ChatColor.Yellow);
-                player.SendChat($"Player \"{target.UserName}\" has been De-Opped!", ChatColor.Yellow);
+                target.SendChat("You have been De-Opped!", MinecraftColor.Yellow);
+                player.SendChat($"Player \"{target.UserName}\" has been De-Opped!", MinecraftColor.Yellow);
             }
         }
     }

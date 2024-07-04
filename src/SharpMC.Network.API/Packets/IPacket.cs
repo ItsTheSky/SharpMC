@@ -1,6 +1,4 @@
-using SharpMC.Network.API;
-
-namespace SharpMC.Network.Packets.API
+namespace SharpMC.Network.API.Packets
 {
 	public interface IPacket : IPacket<IMinecraftStream>
 	{

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Numerics;
 using SharpMC.API.Chunks;
+using SharpMC.API.Components;
+using SharpMC.API.Components.Colors;
 using SharpMC.API.Enums;
 using SharpMC.API.Net;
 using SharpMC.API.Players;
@@ -26,9 +28,13 @@ namespace SharpMC.API.Entities
 
         int ViewDistance { get; set; }
 
-        void SendChat(string message, ChatColor? color = null);
+        void SendChat(string message, MinecraftColor? color = null, Guid? sender = null);
+        
+        void SendChat(Component component, Guid? sender = null);
+        
+        void SendActionBar(Component component);
 
-        void Kick(string name);
+        void Kick(Component? message = null);
 
         bool ToggleOperatorStatus();
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SharpMC.Network.API;
+using SharpMC.Network.API.Packets;
 using SharpMC.Network.Packets.API;
 
 namespace SharpMC.Network.Util

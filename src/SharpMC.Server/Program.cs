@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -15,13 +16,14 @@ namespace SharpMC.Server
     {
         private static async Task Main(string[] args)
         {
-            await CreateHostBuilder(args).RunConsoleAsync();
+            var cancellationTokenSource = new CancellationTokenSource();
+            await CreateHostBuilder(args, cancellationTokenSource).RunConsoleAsync(cancellationTokenSource.Token);
         }
 
-        private static IHostBuilder CreateHostBuilder(string[] args)
+        private static IHostBuilder CreateHostBuilder(string[] args, CancellationTokenSource cancellationTokenSource)
         {
             var root = AppContext.BaseDirectory;
-            IHostEnv host = new CmdHost(root);
+            IHostEnv host = new CmdHost(root, cancellationTokenSource);
             return Host.CreateDefaultBuilder(args)
                 .UseContentRoot(host.ContentRoot)
                 .ConfigureServices((context, services)

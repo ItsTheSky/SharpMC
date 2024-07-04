@@ -10,6 +10,7 @@ using SharpMC.API.Entities;
 using SharpMC.API.Enums;
 using SharpMC.API.Players;
 using SharpMC.API.Worlds;
+using SharpMC.Network.API.Packets;
 using SharpMC.Network.Packets.API;
 using SharpMC.World.API;
 

@@ -1,4 +1,5 @@
 ﻿using SharpMC.Network.API;
+using SharpMC.Network.API.Packets;
 using SharpMC.Network.Packets.API;
 
 namespace SharpMC.Network.Binary.Special

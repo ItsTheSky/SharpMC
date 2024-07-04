@@ -1,8 +1,8 @@
 using System;
 using System.Numerics;
-using SharpMC.Network.Binary;
-using SharpMC.Network.Binary.Special;
-using SharpMC.Network.Packets.API;
+using SharpMC.Network.API.Binary;
+using SharpMC.Network.API.Binary.Special;
+using SharpMC.Network.API.Packets;
 
 namespace SharpMC.Network.API
 {

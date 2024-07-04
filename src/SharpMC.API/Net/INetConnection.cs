@@ -1,4 +1,4 @@
-﻿using SharpMC.Network.Packets.API;
+﻿using SharpMC.Network.API.Packets;
 
 namespace SharpMC.API.Net
 {
@@ -9,5 +9,7 @@ namespace SharpMC.API.Net
         void SendKeepAlive();
 
         bool KeepAliveReady { get; }
+
+        void Stop();
     }
 }

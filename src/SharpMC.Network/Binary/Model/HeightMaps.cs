@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using SharpMC.Network.API.Binary;
 using SharpNBT;
 
 namespace SharpMC.Network.Binary.Model

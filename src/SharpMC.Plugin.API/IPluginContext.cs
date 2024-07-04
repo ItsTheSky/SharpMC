@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using SharpMC.API.Components;
 using SharpMC.API.Worlds;
 
 namespace SharpMC.Plugin.API

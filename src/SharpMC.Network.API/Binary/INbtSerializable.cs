@@ -1,6 +1,6 @@
 using SharpNBT;
 
-namespace SharpMC.Network.Binary
+namespace SharpMC.Network.API.Binary
 {
     public interface INbtSerializable : IBinSerializable<CompoundTag>
     {

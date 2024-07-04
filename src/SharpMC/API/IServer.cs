@@ -1,5 +1,7 @@
-﻿using SharpMC.API.Players;
+﻿using SharpMC.API.Components;
+using SharpMC.API.Players;
 using SharpMC.API.Worlds;
+using SharpMC.Plugin.API;
 
 namespace SharpMC.API
 {
@@ -16,5 +18,7 @@ namespace SharpMC.API
         IServerInfo Info { get; }
 
         ILevelManager LevelManager { get; }
+        
+        IPluginManager PluginManager { get; }
     }
 }

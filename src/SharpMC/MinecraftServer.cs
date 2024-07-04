@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SharpMC.API;
+using SharpMC.API.Components;
 using SharpMC.API.Players;
 using SharpMC.API.Worlds;
 using SharpMC.Config;
@@ -12,6 +13,7 @@ using SharpMC.Network.Packets;
 using SharpMC.Players;
 using SharpMC.Plugin.API;
 using SharpMC.Util;
+using SharpMC.Util.Encryption;
 
 namespace SharpMC
 {
@@ -41,6 +43,7 @@ namespace SharpMC
         private NetServer? Server { get; set; }
         public IEncryption RsaEncryption { get; set; }
         public ILevelManager LevelManager => _levelManager;
+        public IPluginManager PluginManager => _pluginManager;
 
         public void Start()
         {

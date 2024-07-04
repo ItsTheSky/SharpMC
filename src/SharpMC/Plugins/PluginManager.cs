@@ -10,6 +10,8 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Options;
+using SharpMC.API.Components;
+using SharpMC.API.Components.Colors;
 using SharpMC.API.Entities;
 using SharpMC.API.Enums;
 using SharpMC.Plugin.API;
@@ -30,6 +32,8 @@ namespace SharpMC.Plugins
         private readonly List<IPlugin> _plugins;
         private readonly Dictionary<MethodInfo, CommandAttribute> _commands;
         private readonly Dictionary<MethodInfo, OnPlayerJoinAttribute> _joinEvents;
+        
+        private readonly IGlobal _globals;
 
         public PluginManager(IHostEnv host, ILogger<PluginManager> log, ILevelManager levelMgr,
             IOptions<ServerSettings> config, IEnumerable<IPlugin> builtIns, 
@@ -46,6 +50,38 @@ namespace SharpMC.Plugins
             _host = host;
             _plugins = new List<IPlugin>();
             Array.ForEach(builtIns.ToArray(), LoadPlugin);
+            
+            _globals = new Global(this);
+        }
+        
+        private class Global : IGlobal
+        {
+            private readonly PluginManager _manager;
+            
+            public Global(PluginManager manager)
+            {
+                _manager = manager;
+            }
+            
+            public void BroadcastChat(string message, IPlayer? player = null)
+            {
+                foreach (var pl in _manager._levelManager.GetAllPlayers())
+                {
+                    pl.SendChat(message, MinecraftColor.White, player?.Uuid);
+                }
+            }
+
+            public void StopServer(string? message = null)
+            {
+                if (message != null)
+                {
+                    foreach (var pl in _manager._levelManager.GetAllPlayers())
+                    {
+                        pl.Kick(message);
+                    }
+                }
+                _manager._host.Shutdown();
+            }
         }
 
         private string PluginDirectory
@@ -59,7 +95,7 @@ namespace SharpMC.Plugins
                     continue;
                 try
                 {
-                    var context = new PluginContext(levelManager, default, _factory);
+                    var context = new PluginContext(levelManager, _globals, _factory);
                     one.OnEnable(context);
                 }
                 catch (Exception ex)
@@ -93,9 +129,11 @@ namespace SharpMC.Plugins
             var dir = PluginDirectory;
             const SearchOption o = SearchOption.AllDirectories;
             var files = Directory.GetFiles(dir, "*.dll", o);
+            _log.LogInformation($"Found {files.Length} plugin files. Loading...");
             foreach (var pluginPath in files)
                 try
                 {
+                    _log.LogInformation($"Loading plugin {pluginPath}");
                     LoadPlugin(pluginPath);
                 }
                 catch (Exception ex)
@@ -108,6 +146,7 @@ namespace SharpMC.Plugins
         {
             var newAssembly = Assembly.LoadFile(pluginPath);
             var types = newAssembly.GetExportedTypes();
+            _log.LogInformation($"Found {types.Length} types in {pluginPath}");
             foreach (var type in types)
             {
                 LoadPlugin(type, null);
@@ -207,6 +246,7 @@ namespace SharpMC.Plugins
         {
             try
             {
+                _log.LogInformation($"Handling command: {message} with total of {_commands.Count} commands.");
                 var commandText = message.Split(' ')[0];
                 message = message.Replace(commandText, "").Trim();
                 commandText = commandText.Replace("/", "").Replace(".", "");
@@ -223,7 +263,7 @@ namespace SharpMC.Plugins
                         var permissionManager = _permissionManager;
                         if (!permissionManager.HasPermission(player, authorizationAttribute.Permission))
                         {
-                            player.SendChat("You are not permitted to use this command!", ChatColor.Red);
+                            player.SendChat("You are not permitted to use this command!", MinecraftColor.Red);
                             return;
                         }
                     }
@@ -234,8 +274,10 @@ namespace SharpMC.Plugins
             catch (Exception ex)
             {
                 _log.LogWarning(ex.ToString());
+                player.SendChat("An error occurred while executing the command: " + ex.InnerException?.Message, MinecraftColor.Gold);
+                return;
             }
-            player.SendChat("Unknown command.", ChatColor.Red);
+            player.SendChat("Unknown command.", MinecraftColor.Red);
         }
 
         private bool ExecuteCommand(MethodInfo method, IPlayer player, string[] args, CommandAttribute commandAttribute)
@@ -259,8 +301,8 @@ namespace SharpMC.Plugins
                 hasRequiredParameters = false;
             if (!hasRequiredParameters || args.Length > parameters.Length - addLength && !hasStringArray)
             {
-                player.SendChat("Invalid command usage!", ChatColor.Red);
-                player.SendChat(commandAttribute.Usage, ChatColor.Red);
+                player.SendChat("Invalid command usage!", MinecraftColor.Red);
+                player.SendChat(commandAttribute.Usage, MinecraftColor.Red);
                 return true;
             }
             var objectArgs = new object[parameters.Length];
@@ -343,7 +385,7 @@ namespace SharpMC.Plugins
                         .FirstOrDefault(p => p.UserName.ToLower().Equals(args[i].ToLower()));
                     if (value == null)
                     {
-                        player.SendChat($"Player \"{args[i]}\" is not found!", ChatColor.Red);
+                        player.SendChat($"Player \"{args[i]}\" is not found!", MinecraftColor.Red);
                         return true;
                     }
                     objectArgs[k] = value;

@@ -4,8 +4,8 @@ namespace SharpMC.Plugin.API
 {
     public interface IGlobal
     {
-        void BroadcastChat(string message, IPlayer player);
+        void BroadcastChat(string message, IPlayer? player = null);
 
-        void StopServer(string message);
+        void StopServer(string? message = null);
     }
 }

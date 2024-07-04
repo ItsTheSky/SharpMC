@@ -1,4 +1,5 @@
-﻿using SharpNBT;
+﻿using SharpMC.Network.API.Binary;
+using SharpNBT;
 using static SharpMC.Network.Binary.NbtUtil;
 
 namespace SharpMC.Network.Binary.Model

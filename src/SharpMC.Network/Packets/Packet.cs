@@ -1,11 +1,12 @@
 ﻿using SharpMC.Network.API;
+using SharpMC.Network.API.Packets;
 using SharpMC.Network.Packets.API;
 
 namespace SharpMC.Network.Packets
 {
 	public abstract class Packet : IPacket
 	{
-		public int PacketId { get; set; } = -1;
+		public virtual int PacketId { get; set; } = -1;
 
 		public abstract void Decode(IMinecraftStream stream);
 

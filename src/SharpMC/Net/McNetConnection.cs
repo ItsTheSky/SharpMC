@@ -7,11 +7,13 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SharpMC.API;
+using SharpMC.API.Components;
 using SharpMC.API.Entities;
 using SharpMC.API.Net;
 using SharpMC.API.Players;
 using SharpMC.Network;
 using SharpMC.Network.API;
+using SharpMC.Network.API.Packets;
 using SharpMC.Network.Events;
 using SharpMC.Network.Packets;
 using SharpMC.Network.Packets.API;
@@ -247,39 +249,41 @@ namespace SharpMC.Net
 
         private void HandlePlay(Packet packet)
         {
-            if (packet is KeepAlive keepAlive)
+            switch (packet)
             {
-                HandleKeepAlive(keepAlive);
-            }
-            else if (packet is Position)
-            {
-                HandlePlayerPos((Position) packet);
-            }
-            else if (packet is PositionLook)
-            {
-                HandlePlayerPosAndLook((PositionLook) packet);
-            }
-            else if (packet is Look)
-            {
-                HandlePlayerLook((Look) packet);
-            }
-            else if (packet is SettingsPk)
-            {
-                HandleClientSettings((SettingsPk) packet);
-            }
-            else if (packet is Chat)
-            {
-                HandleChatMessage((Chat) packet);
+                case KeepAlive keepAlive:
+                    HandleKeepAlive(keepAlive);
+                    break;
+                case Position position:
+                    HandlePlayerPos(position);
+                    break;
+                case PositionLook look:
+                    HandlePlayerPosAndLook(look);
+                    break;
+                case Look look1:
+                    HandlePlayerLook(look1);
+                    break;
+                case SettingsPk settings:
+                    HandleClientSettings(settings);
+                    break;
+                case Chat chat:
+                    HandleChatMessage(chat);
+                    break;
             }
         }
 
         private void HandleChatMessage(Chat packet)
         {
-            var obj = new Network.Packets.Play.ToClient.Chat
+            if (packet.Message.StartsWith("/")) 
+                Server.PluginManager.HandleCommand(packet.Message, Player);
+            else
             {
-                Message = ChatHelper.EncodeChatMessage($"<{Player.UserName}> {packet.Message}")
-            };
-            Player.Level.RelayBroadcast(obj);
+                var obj = new Network.Packets.Play.ToClient.Chat
+                {
+                    Message = ChatHelper.EncodeChatMessage($"<{Player.UserName}> {packet.Message}")
+                };
+                Player.Level.RelayBroadcast(obj);
+            }
         }
 
         private void HandleClientSettings(SettingsPk packet)
@@ -345,6 +349,11 @@ namespace SharpMC.Net
         {
             var raw = (Packet) packet;
             base.SendPacket(raw);
+        }
+        
+        public void Close()
+        {
+            Stop();
         }
     }
 }

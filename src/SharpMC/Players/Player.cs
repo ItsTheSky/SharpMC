@@ -4,6 +4,9 @@ using System.Numerics;
 using Microsoft.Extensions.Logging;
 using SharpMC.API;
 using SharpMC.API.Chunks;
+using SharpMC.API.Components;
+using SharpMC.API.Components.Colors;
+using SharpMC.API.Components.Types;
 using SharpMC.API.Entities;
 using SharpMC.API.Enums;
 using SharpMC.API.Net;
@@ -14,8 +17,10 @@ using SharpMC.Data;
 using SharpMC.Net;
 using SharpMC.Network.Binary.Model;
 using SharpMC.Network.Binary.Special;
+using SharpMC.Network.Packets.Login.ToClient;
 using SharpMC.Network.Packets.Play.ToBoth;
 using SharpMC.Network.Packets.Play.ToClient;
+using SharpMC.Util;
 using static SharpMC.Util.Numbers;
 
 namespace SharpMC.Players
@@ -52,9 +57,14 @@ namespace SharpMC.Players
         private long _timeSinceLastKeepAlive;
         private ChunkCoordinates _prevChunkCoordinates;
 
-        public void Kick(string name)
+        public void Kick(Component? message = null)
         {
-            throw new System.NotImplementedException();
+            var encoded = ChatHelper.EncodeComponent(message ?? new TextComponent("You have been kicked from the server."));
+            Connection.SendPacket(new Disconnect
+            {
+                Reason = encoded,
+                State = Network.Packets.Login.ToClient.Disconnect.DisconnectState.Play
+            });
         }
 
         public bool ToggleOperatorStatus()
@@ -239,9 +249,34 @@ namespace SharpMC.Players
 
         public Guid Uuid { get; set; }
 
-        public void SendChat(string message, ChatColor? color = null)
+        public void SendChat(string message, MinecraftColor? color = null, Guid? sender = null)
         {
-            throw new System.NotImplementedException();
+            SendChat(new TextComponent(message)
+            {
+                Color = color
+            }, sender);
+        }
+
+        public void SendChat(Component component, Guid? sender = null)
+        {
+            var packet = new Chat
+            {
+                Message = ChatHelper.EncodeComponent(component),
+                Position = 0,
+                Sender = sender ?? Guid.Empty
+            };
+            Connection.SendPacket(packet);
+        }
+
+        public void SendActionBar(Component component)
+        {
+            var packet = new Chat
+            {
+                Message = ChatHelper.EncodeComponent(component),
+                Position = 2,
+                Sender = Guid.Empty
+            };
+            Connection.SendPacket(packet);
         }
 
         public void SpawnToPlayers(IPlayer[] players)

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SharpMC.API;
+using SharpMC.API.Components;
 using SharpMC.API.Entities;
 using SharpMC.API.Worlds;
 using SharpMC.Config;

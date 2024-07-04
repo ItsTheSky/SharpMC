@@ -1,9 +1,8 @@
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using SharpMC.API;
-using SharpMC.Util.Encryption;
 
-namespace SharpMC.Util
+namespace SharpMC.Util.Encryption
 {
     internal sealed class EncryptionHolder : IEncryption
     {
